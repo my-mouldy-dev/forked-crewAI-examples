@@ -1,0 +1,88 @@
+philosophical_angle:
+  description: >
+    You are on question {question_number} of {total_questions} with {subject_name}.
+
+    The area to probe next:
+    {target_area}
+
+    Why this area, now: {targeting_reason}
+
+    What the last assessment said to press on: {probe_next}
+
+    The interview so far:
+    {transcript}
+
+    Propose two candidate questions from your angle. Each must be answerable by an ordinary
+    person in a few sentences, must be about their own life rather than about ideas in
+    general, and must be impossible to answer well with a slogan.
+  expected_output: >
+    Two candidate questions. Under each, one line saying what a real answer would reveal
+    and what a fake one would sound like.
+  agent: existential_philosopher
+
+psychological_angle:
+  description: >
+    Same person, same moment in the interview. The area to probe:
+    {target_area}
+
+    The interview so far:
+    {transcript}
+
+    Propose two candidate questions from your angle. Prefer questions that ask for a
+    specific event, decision or change rather than a position.
+  expected_output: >
+    Two candidate questions, each with one line on what it is designed to expose.
+  agent: developmental_psychologist
+
+practice_angle:
+  description: >
+    Same person, same moment. The area to probe:
+    {target_area}
+
+    Where their answers have been strong or weak so far:
+    {coverage}
+
+    Propose two candidate questions from your angle. Yours should be about ordinary,
+    unglamorous behaviour - what they actually do on a normal day - not about how they feel
+    about life in general.
+  expected_output: >
+    Two candidate questions, each with one line on what it is designed to expose.
+  agent: contemplative_practitioner
+
+skeptical_angle:
+  description: >
+    Same person, same moment. The area to probe:
+    {target_area}
+
+    The interview so far, including the panel's notes on each answer:
+    {transcript}
+
+    Find the seam. What is this person quietly protecting, avoiding, or repeating? Propose
+    two candidate questions aimed at exactly that. If earlier answers contradict each other,
+    one of your questions should make them account for it directly.
+  expected_output: >
+    Two candidate questions, each with one line on the evasion it is designed to close off.
+  agent: hard_skeptic
+
+choose_question:
+  description: >
+    Read any candidate questions the rest of the panel proposed and pick or rewrite the
+    single best next question for {subject_name}. If the panel proposed nothing, write it
+    yourself.
+
+    The question must be about the area described here:
+    {target_area}
+
+    Rules you enforce:
+    - One question. Not two joined by "and". No preamble.
+    - Plain English. No jargon, no therapy language, no mystical language.
+    - It must ask about their life, not their opinions.
+    - It must not be answerable well by anyone who has simply read a lot.
+    - It must not repeat a question already asked in the interview so far:
+    {transcript}
+
+    Return the dimension key exactly as given in the area description above.
+  expected_output: >
+    The chosen question, the dimension key, why this question now, and what a bluffed
+    answer to it would look like.
+  agent: question_master

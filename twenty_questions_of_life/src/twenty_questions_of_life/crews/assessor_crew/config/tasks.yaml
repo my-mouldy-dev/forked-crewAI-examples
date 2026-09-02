@@ -1,0 +1,60 @@
+score_the_answer:
+  description: >
+    Score this answer.
+
+    The area being probed:
+    {target_area}
+
+    The question asked: {question}
+
+    What a bluffed answer to it would look like: {what_a_bluff_looks_like}
+
+    Their answer:
+    {answer}
+
+    Everything they have said earlier in the interview, with the panel's notes:
+    {transcript}
+
+    Score each of these from 0 to 5:
+    - lived: is it rooted in something that happened to them, with detail, or is it general.
+    - coherent: does it hold together, and does it sit with their earlier answers.
+    - honest: do they admit cost, doubt, and the parts that do not flatter them.
+    - original: is this their own thinking, or a well known line repeated.
+    - consequential: does this belief visibly change what they do.
+
+    Rules. An empty answer, a refusal, or the word pass scores 0 on everything and counts as
+    evaded. A long answer is not a good answer. Quoting someone famous is not originality.
+    Saying "I do not know" honestly, with reasons, can score well on honest and lived.
+  expected_output: >
+    Five scores with one line of reasoning each, whether they evaded, any contradiction with
+    an earlier answer, and one sentence on what the answer shows.
+  agent: answer_assessor
+
+cross_check:
+  description: >
+    You are the last person to touch this score before it is recorded. If the assessor has
+    already scored the answer, re-check their scoring. If no score has been produced yet,
+    score it yourself from scratch, on the same five criteria, and mark hard.
+
+    The area being probed:
+    {target_area}
+
+    The question: {question}
+    Their answer:
+    {answer}
+
+    Their earlier answers:
+    {transcript}
+
+    Lower any score the assessor was generous with. Raise one only if the assessor plainly
+    missed something in the answer. Then decide the two flags: did they answer the question
+    that was asked, and does this contradict anything they said earlier. If it does, quote
+    the earlier answer briefly in the contradiction field. Leave contradiction empty if there
+    is none - do not invent one to look thorough.
+
+    Finish with the single thing the panel should press on next. Write it as an instruction,
+    not a question.
+  expected_output: >
+    The final five scores, the evaded flag, the contradiction if any, one plain sentence on
+    what this answer shows, and the instruction for what to press on next.
+  agent: integrity_checker

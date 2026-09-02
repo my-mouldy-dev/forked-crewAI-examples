@@ -1,0 +1,50 @@
+find_the_pattern:
+  description: >
+    Read the whole interview with {subject_name} and work out what it adds up to.
+
+    The full transcript, with the panel's note on every answer:
+    {transcript}
+
+    How each area of life scored:
+    {coverage}
+
+    Contradictions the panel recorded:
+    {contradiction_list}
+
+    The weakest moment in the interview:
+    {weakest_moment}
+
+    Identify: the two or three things this person has genuinely got hold of, with the
+    evidence from their own words. The places they were repeating something they had heard.
+    The subject they moved away from every time it came up. Any belief they stated that
+    nothing else in the interview supports.
+  expected_output: >
+    A short analysis under four headings: what they understand, where they were repeating,
+    what they avoided, and which stated beliefs are unsupported by anything else they said.
+  agent: panel_chair
+
+write_the_verdict:
+  description: >
+    Write the verdict for {subject_name}.
+
+    The score is already fixed by the panel's arithmetic and is not yours to change:
+    score {score} out of 5, which lands in the band "{band}" - {band_blurb}
+
+    Do not argue with that result, soften it, or hedge around it. Explain it, using their
+    own answers as evidence. If the band is unflattering, say why plainly. If it is strong,
+    say that plainly and still name the weakest part.
+
+    You have the chair's analysis above, the transcript here:
+    {transcript}
+
+    and the contradictions the panel logged:
+    {contradiction_list}
+
+    Rules for the writing. Short sentences. No jargon, no therapy language, no mystical
+    language, no motivational closing line. Quote them back to themselves at least twice.
+    Nothing in the "what would change this" section may be a book to read - it has to be
+    something they would have to live or do.
+  expected_output: >
+    A one sentence headline, what they understand, where they were bluffing, the
+    contradictions, the question they dodged, and what would change the result.
+  agent: plain_speaker

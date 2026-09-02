@@ -11,6 +11,7 @@ By [@joaomdmoura](https://x.com/joaomdmoura).
 - [Find Job Candidades Demo](https://github.com/joaomdmoura/crewAI-examples/tree/main/recruitment)
 - [Create Job Posting](https://github.com/joaomdmoura/crewAI-examples/tree/main/job-posting)
 - [Game Generator](https://github.com/joaomdmoura/crewAI-examples/tree/main/game-builder-crew)
+- [Twenty Questions of Life](https://github.com/joaomdmoura/crewAI-examples/tree/main/twenty_questions_of_life) - an adaptive interview that asks you 20 questions, chosen one at a time, to test whether you understand life or only know what a good answer sounds like
 
 ## Old Examples, need to be updated
 
