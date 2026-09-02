@@ -27,6 +27,15 @@ function Die($text) {
     exit 1
 }
 
+function Get-VenvPython($venvPath) {
+    # $IsWindows only exists in PowerShell 6 and later. In Windows PowerShell
+    # 5.1 the variable is absent, and that only ever runs on Windows anyway.
+    $onWindows = $true
+    if (Test-Path Variable:IsWindows) { $onWindows = $IsWindows }
+    if ($onWindows) { return (Join-Path $venvPath "Scripts\python.exe") }
+    return (Join-Path $venvPath "bin/python")
+}
+
 function Save-TextFile($path, $text) {
     # Set-Content in Windows PowerShell writes a byte order mark, which the
     # .env reader would hand back as part of the first key name.
@@ -80,7 +89,7 @@ if (-not $python) {
 # ---------------------------------------------------------- environment
 
 $venv = Join-Path $PSScriptRoot ".venv"
-$venvPython = Join-Path $venv "Scripts\python.exe"
+$venvPython = Get-VenvPython $venv
 
 if ($Force -and (Test-Path $venv)) {
     Step "Removing the old virtual environment"
@@ -161,7 +170,7 @@ Write-Host "`n== Ready" -ForegroundColor Green
 Write-Host ""
 Write-Host "   On this machine:      .\start.ps1 -Terminal"
 Write-Host "   On your phone:        .\start.ps1"
-Write-Host "   Run the tests:        .venv\Scripts\python.exe -m unittest discover tests"
+Write-Host "   Run the tests:        $venvPython -m unittest discover tests"
 Write-Host ""
 Write-Host "   start.ps1 prints a link and a QR code. If Windows Firewall asks," -ForegroundColor DarkGray
 Write-Host "   allow it on private networks only - that is what lets your phone in." -ForegroundColor DarkGray

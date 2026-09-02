@@ -48,7 +48,16 @@ function Die($text) {
     exit 1
 }
 
-$venvPython = Join-Path $PSScriptRoot ".venv\Scripts\python.exe"
+function Get-VenvPython($venvPath) {
+    # $IsWindows only exists in PowerShell 6 and later. In Windows PowerShell
+    # 5.1 the variable is absent, and that only ever runs on Windows anyway.
+    $onWindows = $true
+    if (Test-Path Variable:IsWindows) { $onWindows = $IsWindows }
+    if ($onWindows) { return (Join-Path $venvPath "Scripts\python.exe") }
+    return (Join-Path $venvPath "bin/python")
+}
+
+$venvPython = Get-VenvPython (Join-Path $PSScriptRoot ".venv")
 if (-not (Test-Path $venvPython)) {
     Die "No virtual environment here yet. Run this first:`n  powershell -ExecutionPolicy Bypass -File .\setup.ps1"
 }
