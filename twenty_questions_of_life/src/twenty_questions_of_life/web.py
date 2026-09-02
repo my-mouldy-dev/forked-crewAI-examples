@@ -17,6 +17,7 @@ import argparse
 import json
 import os
 import secrets
+import socket
 import threading
 from pathlib import Path
 from typing import Dict, List, Optional
@@ -296,8 +297,27 @@ def list_sessions() -> List[dict]:
     return out[:20]
 
 
+def _lan_address() -> str:
+    """The address this machine has on its own network.
+
+    Printing "http://0.0.0.0:8020" is useless on a phone. Opening a UDP socket
+    towards an address in the documentation range asks the routing table which
+    interface would be used to leave this machine, without sending anything.
+    """
+    probe = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    try:
+        probe.connect(("192.0.2.1", 1))
+        return probe.getsockname()[0]
+    except OSError:
+        return "localhost"
+    finally:
+        probe.close()
+
+
 def _print_launch_details(host: str, port: int, token: Optional[str]) -> None:
     shown = "localhost" if host in {"127.0.0.1", "localhost"} else host
+    if host in {"0.0.0.0", "::"}:
+        shown = _lan_address()
     url = f"http://{shown}:{port}/" + (f"?t={token}" if token else "")
     print("\n  Twenty Questions of Life is up.")
     print(f"  Open this on your phone: {url}\n")

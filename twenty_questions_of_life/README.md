@@ -67,9 +67,9 @@ Python >=3.10 <=3.13.
 pip install crewai
 ```
 
-Copy `.env_example` to `.env` and put your `OPENAI_API_KEY` in it. Set `MODEL` in the same
-file if you want something other than the default, for example `gpt-4o-mini` to keep the cost
-down.
+Copy `.env.example` to `.env` and put your `OPENAI_API_KEY` in it. `MODEL` in the same file
+picks the model - `gpt-4o-mini` is the one to use unless you have a reason not to, since a
+full run is about 140 calls. On Windows, `setup.ps1` does all of this for you.
 
 If you hit `ModuleNotFoundError: No module named 'pkg_resources'` on a fresh environment,
 install `setuptools<81` - crewai 0.85 still imports `pkg_resources`, which newer setuptools
@@ -212,19 +212,32 @@ interview the server has forgotten, and the token check.
 
 ## Windows
 
-Everything above works the same in PowerShell, with two differences - the virtual environment
-path, and how you set an environment variable:
+Two scripts do the whole thing. From the project folder:
 
 ```powershell
-python -m venv .venv
-.\.venv\Scripts\Activate.ps1
-pip install -e ".[web]"
-$env:OPENAI_API_KEY = "sk-..."
-python -m twenty_questions_of_life.web --host 0.0.0.0
+powershell -ExecutionPolicy Bypass -File .\setup.ps1
+.\start.ps1
 ```
 
-If Windows Firewall prompts when the server starts, allow it on private networks only - that
-is what lets your phone reach it over your own wifi.
+`setup.ps1` finds a Python it can use, builds `.venv`, installs everything, creates `.env`
+from `.env.example` and offers to write your API key into it. It is safe to run again - it
+only does what is still missing, and `-Force` rebuilds the environment from scratch.
+
+`start.ps1` reads `.env` into that one window, then serves the page and prints the link and
+QR code. It never writes your key into your user or system environment, so it is gone when
+you close the window.
+
+```powershell
+.\start.ps1                          # web page, reachable from your phone
+.\start.ps1 -LocalOnly               # localhost only, no token, no phone
+.\start.ps1 -Terminal -Name Sam      # do it here in the window instead
+.\start.ps1 -Terminal -Panel lean -Questions 10
+```
+
+Two things that bite on Windows. If Windows Firewall prompts when the server starts, allow it
+on **private networks only** - that is what lets your phone in over your own wifi and nothing
+else. And crewAI 0.85 needs Python 3.10 to 3.12; on 3.13 the install succeeds and then fails
+at import, so `setup.ps1` refuses 3.13 up front and tells you why.
 
 ## Things worth knowing
 
