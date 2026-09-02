@@ -8,9 +8,19 @@ dependencies = [
     "crewai[tools]==0.85.0",
 ]
 
+[project.optional-dependencies]
+# Only needed for the web front end (python -m twenty_questions_of_life.web)
+web = [
+    "fastapi>=0.110",
+    "uvicorn>=0.29",
+    "qrcode>=7.4",
+]
+
 [project.scripts]
 kickoff = "twenty_questions_of_life.main:kickoff"
 plot = "twenty_questions_of_life.main:plot"
+interview = "twenty_questions_of_life.main:kickoff"
+interview-web = "twenty_questions_of_life.web:main"
 
 [build-system]
 requires = ["hatchling"]

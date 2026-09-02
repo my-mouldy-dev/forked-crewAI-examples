@@ -106,6 +106,46 @@ To see it catch a bluff without typing anything, run it against the twenty plati
 PYTHONPATH=src python -m twenty_questions_of_life.main --name "Demo" --answers example_answers.txt
 ```
 
+## On your phone
+
+The terminal version needs a keyboard. This one does not: the same panel, the same scoring,
+one question per screen.
+
+```bash
+pip install -e ".[web]"
+python -m twenty_questions_of_life.web --host 0.0.0.0
+```
+
+It prints a link with a token in it, and a QR code you can point your phone at. Answers are
+saved after every question, so you can close the tab on question eleven, and open the same
+link that evening to carry on - the start screen offers any interview you have left open.
+
+A model call takes half a minute, which is longer than a phone will hold an HTTP request
+open, so the work runs on a background thread and the page polls for it. That is also why
+closing the tab costs you nothing.
+
+### Reaching it from outside your house
+
+`--host 0.0.0.0` is enough if the phone is on the same wifi as the machine running it. From
+anywhere else, pick one:
+
+| How | What to do | Worth knowing |
+| --- | --- | --- |
+| Tailscale | Install it on both devices, then use the machine's tailnet address | Nothing is exposed to the internet. This is the one to pick |
+| Cloudflare tunnel | `cloudflared tunnel --url http://localhost:8020` | A public URL anyone with the link can hit, so keep the token |
+| A small VPS | Run it there behind nginx and TLS | You are now hosting a service; treat it like one |
+
+### The token
+
+Bind to anything other than localhost and the app requires a token on every API call. If you
+did not set one it generates one for the run and prints it in the link. Set your own with
+`--token`, or the `INTERVIEW_TOKEN` environment variable, if you want the link to keep
+working across restarts.
+
+The token is the only thing between the open port and your model spend. Do not put this on a
+public URL without one, and do not paste the link into anything you would not paste an API
+key into.
+
 ### What it costs
 
 A full run is about 20 x 5 calls for the questions, 20 x 2 for the scoring, and 2 for the
@@ -144,7 +184,10 @@ it twenty times. Draw it with `crewai flow plot`.
 
 ```
 src/twenty_questions_of_life/
-  main.py          the flow, the loop, and the CLI
+  engine.py        the interview itself, with no front end in it - both UIs drive this
+  main.py          the crewAI Flow, the terminal loop, and the CLI
+  web.py           the web front end: background workers, saved sessions, token check
+  static/          the one page the phone loads
   dimensions.py    the twelve areas of life, and what a fake answer to each sounds like
   scoring.py       all the arithmetic: weights, penalties, coverage, bands, what to ask next
   session.py       the terminal, the transcript, and the report
@@ -156,11 +199,32 @@ src/twenty_questions_of_life/
 ```
 
 `scoring.py`, `session.py`, `dimensions.py` and `models.py` do not import crewAI, so the
-judgement can be tested without an LLM anywhere near it:
+judgement can be tested without an LLM anywhere near it. The web tests stub the three crews
+out, so they need no key either:
 
 ```bash
 python -m unittest discover tests
 ```
+
+That is 31 tests: the weighting and the penalties, the rules for what gets asked next, the
+bands, the report, and the web state machine - starting, answering, double taps, resuming an
+interview the server has forgotten, and the token check.
+
+## Windows
+
+Everything above works the same in PowerShell, with two differences - the virtual environment
+path, and how you set an environment variable:
+
+```powershell
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
+pip install -e ".[web]"
+$env:OPENAI_API_KEY = "sk-..."
+python -m twenty_questions_of_life.web --host 0.0.0.0
+```
+
+If Windows Firewall prompts when the server starts, allow it on private networks only - that
+is what lets your phone reach it over your own wifi.
 
 ## Things worth knowing
 
@@ -169,6 +233,8 @@ python -m unittest discover tests
   rather than counted as a zero.
 - The panel is asked to echo back the area key it was given. If it invents one, the code
   keeps the area that was actually chosen, so the coverage map stays honest.
+- The web front end tags each answer with the question number it was written for, so a
+  double tap on a slow connection cannot land your answer on the next question.
 - Every agent is told, in its backstory, to write in plain English - no jargon, no therapy
   language, no mystical language. That is a real constraint on the output, not decoration.
 
